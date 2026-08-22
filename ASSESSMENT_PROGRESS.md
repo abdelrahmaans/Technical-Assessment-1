@@ -56,7 +56,7 @@
 ## 🚀 Development Milestones
 - [x] **Milestone 1**: Environment setup (PHP 8.3, Composer, Laravel 11, Sanctum, Git init)
 - [x] **Milestone 2**: Database layer (Course migration, model, factories, 10-course seeder, user seeder)
-- [ ] **Milestone 3**: Unified Response Handler & Exception Formatter (401, 404, 422, 500)
+- [x] **Milestone 3**: Unified Response Handler & Exception Formatter (401, 404, 422, 500)
 - [ ] **Milestone 4**: Sanctum Authentication API (Form Requests, AuthService, AuthController)
 - [ ] **Milestone 5**: Repository & Service Layer + Course CRUD + Filtering / Search / Sorting
 - [ ] **Milestone 6**: Automated Feature Test Suite (Auth, CRUD, Filtering, Errors)
