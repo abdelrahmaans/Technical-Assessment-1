@@ -1,58 +1,418 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Course Management RESTful API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B%20%7C%208.3%2B-777BB4?logo=php&logoColor=white)](https://php.net)
+[![Laravel Version](https://img.shields.io/badge/Laravel-11.x%20%7C%2012.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
+[![Sanctum](https://img.shields.io/badge/Auth-Laravel%20Sanctum-brightgreen)](https://laravel.com/docs/sanctum)
+[![Tests](https://img.shields.io/badge/Tests-22%20Passed%20%2F%20122%20Assertions-success)](tests/Feature)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## About Laravel
+A robust, enterprise-grade RESTful API for Course Management built with Laravel, adhering to clean architecture principles, strict RESTful design standards, and comprehensive automated test coverage.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📑 Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Architectural Highlights](#-architectural-highlights)
+- [Requirements](#-requirements)
+- [Installation & Setup](#-installation--setup)
+- [Database Seeding & Test Credentials](#-database-seeding--test-credentials)
+- [Unified API Response Structure](#-unified-api-response-structure)
+- [API Endpoints Reference](#-api-endpoints-reference)
+  - [Authentication Endpoints](#1-authentication-endpoints)
+  - [Course Management Endpoints](#2-course-management-endpoints)
+- [Query Parameters & Filtering](#-query-parameters--filtering)
+- [Error Handling & HTTP Status Codes](#-error-handling--http-status-codes)
+- [Postman Collection](#-postman-collection)
+- [Running Automated Tests](#-running-automated-tests)
+- [Project Structure](#-project-structure)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🏛 Architectural Highlights
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Clean MVC + Service + Repository Layers**: Complete separation of concerns.
+  - **Controllers**: Thin controllers handling HTTP requests and returning standardized JSON responses.
+  - **Form Requests**: Dedicated request classes encapsulating validation rules (`RegisterRequest`, `LoginRequest`, `StoreCourseRequest`, `UpdateCourseRequest`).
+  - **Service Layer**: Business logic encapsulation (`AuthService`, `CourseService`) with **Database Transactions** for atomic mutations.
+  - **Repository Pattern**: Abstracted database access using `CourseRepositoryInterface` bound to Eloquent `CourseRepository` via `AppServiceProvider`.
+  - **API Resources**: Strict response transformations via `CourseResource` and `UserResource`. Direct Eloquent models are never exposed.
+- **Pure Sanctum Authentication**: Zero boilerplate/starter kit dependencies (No Breeze, Jetstream, or Laravel UI). Token-based authentication using personal access tokens.
+- **Unified Global Exception Handler**: Centrally handled in `bootstrap/app.php` ensuring all errors (401, 404, 422, 500) follow the unified response format.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## ⚙ Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- **PHP**: `^8.2` or `^8.3`
+- **Composer**: `^2.x`
+- **Database**: SQLite (default, zero configuration) or MySQL / PostgreSQL
+- **PHP Extensions**: `pdo_sqlite`, `openssl`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`
 
+---
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url>
+cd Technical-Assessment-1
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 2. Install Dependencies
+```bash
+composer install
+```
 
-## Contributing
+### 3. Configure Environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Database Setup & Migration
+By default, the application is pre-configured to use **SQLite**. If you wish to use MySQL, configure `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` inside `.env`.
 
-## Code of Conduct
+Run the migrations and seed sample data:
+```bash
+php artisan migrate:fresh --seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 5. Start the Development Server
+```bash
+php artisan serve
+```
+The API will be available at: `http://127.0.0.1:8000/api`
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔑 Database Seeding & Test Credentials
 
-## License
+The database seeder (`php artisan db:seed`) creates:
+1. **Default Test User**:
+   - **Email**: `admin@example.com`
+   - **Password**: `password123`
+2. **10 Production-Ready Sample Courses** with various titles, prices, publication statuses, and staggered timestamps for pagination/sorting verification.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 📦 Unified API Response Structure
+
+All API responses strictly adhere to the unified standard:
+
+### Success Response (`200 OK` / `201 Created`)
+```json
+{
+  "success": true,
+  "message": "Course created successfully",
+  "data": { ... }
+}
+```
+
+### Error Response (`401`, `404`, `422`, `500`)
+```json
+{
+  "success": false,
+  "message": "Validation Error",
+  "data": null
+}
+```
+
+---
+
+## 📡 API Endpoints Reference
+
+### 1. Authentication Endpoints
+
+| Method | Endpoint | Access | Description |
+| :--- | :--- | :---: | :--- |
+| `POST` | `/api/register` | Public | Register new user and return Bearer token |
+| `POST` | `/api/login` | Public | Authenticate user credentials and return Bearer token |
+| `POST` | `/api/logout` | Protected | Revoke the current Bearer token |
+| `GET` | `/api/user` | Protected | Retrieve authenticated user profile |
+
+#### Register (`POST /api/register`)
+**Request Body:**
+```json
+{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "password": "password123"
+}
+```
+**Response (`201 Created`):**
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "user": {
+      "id": 2,
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "created_at": "2026-08-23T17:50:00.000000Z",
+      "updated_at": "2026-08-23T17:50:00.000000Z"
+    },
+    "token": "1|AbCdEf123456...",
+    "token_type": "Bearer"
+  }
+}
+```
+
+#### Login (`POST /api/login`)
+**Request Body:**
+```json
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+```
+**Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "User logged in successfully",
+  "data": {
+    "user": {
+      "id": 1,
+      "name": "Admin User",
+      "email": "admin@example.com",
+      "created_at": "2026-08-23T17:48:28.000000Z",
+      "updated_at": "2026-08-23T17:48:28.000000Z"
+    },
+    "token": "2|XyZ987...",
+    "token_type": "Bearer"
+  }
+}
+```
+
+---
+
+### 2. Course Management Endpoints
+
+> **Note**: All course endpoints require the `Authorization: Bearer <token>` header.
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/courses` | List courses with pagination, search, filter, and newest-first sorting |
+| `POST` | `/api/courses` | Create a new course record |
+| `GET` | `/api/courses/{id}` | Retrieve details of a specific course |
+| `PUT/PATCH` | `/api/courses/{id}` | Update an existing course record |
+| `DELETE` | `/api/courses/{id}` | Remove a course record |
+
+#### List Courses (`GET /api/courses?page=1&per_page=10&search=Laravel&published=true`)
+**Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Courses retrieved successfully",
+  "data": {
+    "items": [
+      {
+        "id": 10,
+        "title": "Laravel Eloquent ORM: From Beginner to Pro",
+        "description": "Unlock the full power of Eloquent relationships...",
+        "price": 65.0,
+        "is_published": true,
+        "created_at": "2026-08-22T17:48:28.000000Z",
+        "updated_at": "2026-08-22T17:48:28.000000Z"
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "per_page": 10,
+      "total": 1,
+      "last_page": 1,
+      "from": 1,
+      "to": 1,
+      "has_more_pages": false
+    }
+  }
+}
+```
+
+#### Create Course (`POST /api/courses`)
+**Request Body:**
+```json
+{
+  "title": "Advanced Microservices in Laravel",
+  "description": "Learn event-driven architecture and message brokers.",
+  "price": 149.99,
+  "is_published": true
+}
+```
+**Response (`201 Created`):**
+```json
+{
+  "success": true,
+  "message": "Course created successfully",
+  "data": {
+    "id": 11,
+    "title": "Advanced Microservices in Laravel",
+    "description": "Learn event-driven architecture and message brokers.",
+    "price": 149.99,
+    "is_published": true,
+    "created_at": "2026-08-23T17:51:00.000000Z",
+    "updated_at": "2026-08-23T17:51:00.000000Z"
+  }
+}
+```
+
+#### Show Course (`GET /api/courses/{id}`)
+**Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Course retrieved successfully",
+  "data": {
+    "id": 1,
+    "title": "Mastering Laravel 11 RESTful API Development",
+    "description": "Comprehensive guide to building production-ready REST APIs...",
+    "price": 99.99,
+    "is_published": true,
+    "created_at": "2026-08-13T17:48:28.000000Z",
+    "updated_at": "2026-08-13T17:48:28.000000Z"
+  }
+}
+```
+
+#### Update Course (`PUT /api/courses/{id}`)
+**Request Body:**
+```json
+{
+  "title": "Mastering Laravel 11 RESTful API Development (2026 Edition)",
+  "price": 119.99
+}
+```
+**Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Course updated successfully",
+  "data": {
+    "id": 1,
+    "title": "Mastering Laravel 11 RESTful API Development (2026 Edition)",
+    "description": "Comprehensive guide to building production-ready REST APIs...",
+    "price": 119.99,
+    "is_published": true,
+    "created_at": "2026-08-13T17:48:28.000000Z",
+    "updated_at": "2026-08-23T17:52:00.000000Z"
+  }
+}
+```
+
+#### Delete Course (`DELETE /api/courses/{id}`)
+**Response (`200 OK`):**
+```json
+{
+  "success": true,
+  "message": "Course deleted successfully",
+  "data": {}
+}
+```
+
+---
+
+## 🔍 Query Parameters & Filtering
+
+| Parameter | Type | Default | Example | Description |
+| :--- | :---: | :---: | :--- | :--- |
+| `page` | integer | `1` | `?page=2` | Pagination page number |
+| `per_page` | integer | `10` | `?per_page=5` | Number of courses per page |
+| `search` | string | `null` | `?search=Laravel` | Performs case-insensitive title search |
+| `published` | boolean | `null` | `?published=true` | Filter by published (`true`) or draft (`false`) courses |
+| *Default Sorting* | timestamp | - | - | Automatically sorted by `created_at` DESC (newest first) |
+
+---
+
+## 🛑 Error Handling & HTTP Status Codes
+
+The API returns standardized JSON responses across all HTTP error statuses:
+
+| Status Code | Scenario | Sample Response |
+| :---: | :--- | :--- |
+| **`401 Unauthorized`** | Missing or invalid Bearer token | `{"success": false, "message": "Unauthorized access. Please provide a valid authentication token.", "data": null}` |
+| **`404 Not Found`** | Course ID does not exist | `{"success": false, "message": "Resource not found", "data": null}` |
+| **`422 Unprocessable`** | Form validation failed | `{"success": false, "message": "Validation Error", "data": null}` |
+| **`500 Server Error`** | Unhandled internal exception | `{"success": false, "message": "Internal Server Error", "data": null}` |
+
+---
+
+## 📮 Postman Collection
+
+A complete Postman collection is included in the root directory:
+- **File**: `Course_Management_API.postman_collection.json`
+- **Features**:
+  - Automatically captures and populates `{{bearer_token}}` variable upon login/registration.
+  - Organized by `Authentication`, `Courses CRUD & Filtering`, and `Error Scenarios`.
+
+**Import Steps**:
+1. Open Postman.
+2. Click **Import** and select `Course_Management_API.postman_collection.json`.
+3. Set the `base_url` variable if running on a custom port (default: `http://127.0.0.1:8000/api`).
+
+---
+
+## 🧪 Running Automated Tests
+
+Run the full automated test suite containing unit and feature tests:
+
+```bash
+php artisan test
+```
+
+### Test Coverage Highlights:
+- **AuthTest**: User registration, login validation, token issuance, token revocation on logout, profile access, and invalid credentials.
+- **CourseTest**: Full CRUD workflows, missing required fields validation (422), 404 on missing records, unauthenticated protection (401), search filtering, published boolean filtering, and newest-first descending sorting.
+
+---
+
+## 📂 Project Structure
+
+```text
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   │       ├── AuthController.php      # Registration, Login, Logout, Profile
+│   │   │       └── CourseController.php    # Course CRUD & Listings
+│   │   ├── Requests/
+│   │   │   ├── Auth/
+│   │   │   │   ├── LoginRequest.php        # Login validation
+│   │   │   │   └── RegisterRequest.php     # Registration validation
+│   │   │   └── Course/
+│   │   │       ├── StoreCourseRequest.php  # Course creation validation
+│   │   │       └── UpdateCourseRequest.php # Course update validation
+│   │   └── Resources/
+│   │       ├── CourseResource.php          # Course API transformation
+│   │       └── UserResource.php            # User API transformation
+│   ├── Models/
+│   │   ├── Course.php                      # Course model with scopes
+│   │   └── User.php                        # User model with HasApiTokens
+│   ├── Repositories/
+│   │   ├── Contracts/
+│   │   │   └── CourseRepositoryInterface.php
+│   │   └── Eloquent/
+│   │       └── CourseRepository.php        # Eloquent repository implementation
+│   ├── Services/
+│   │   ├── AuthService.php                 # Auth business logic
+│   │   └── CourseService.php               # Course business logic & DB transactions
+│   └── Traits/
+│       └── ApiResponseTrait.php            # Standardized API response helper
+├── bootstrap/
+│   └── app.php                             # Routing & Global Exception Handler
+├── database/
+│   ├── factories/
+│   │   ├── CourseFactory.php
+│   │   └── UserFactory.php
+│   ├── migrations/
+│   │   └── 2026_08_22_112633_create_courses_table.php
+│   └── seeders/
+│       ├── CourseSeeder.php                # 10 realistic courses
+│       └── DatabaseSeeder.php              # Admin user & course seeder runner
+├── routes/
+│   └── api.php                             # RESTful API route definitions
+└── tests/
+    └── Feature/
+        ├── AuthTest.php                    # 8 feature test cases
+        └── CourseTest.php                  # 12 feature test cases
+```
