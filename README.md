@@ -3,7 +3,7 @@
 [![PHP Version](https://img.shields.io/badge/PHP-8.2%2B%20%7C%208.3%2B-777BB4?logo=php&logoColor=white)](https://php.net)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11.x%20%7C%2012.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![Sanctum](https://img.shields.io/badge/Auth-Laravel%20Sanctum-brightgreen)](https://laravel.com/docs/sanctum)
-[![Tests](https://img.shields.io/badge/Tests-22%20Passed%20%2F%20122%20Assertions-success)](tests/Feature)
+[![Tests](https://img.shields.io/badge/Tests-20%20Passed%20%2F%20120%20Assertions-success)](tests/Feature)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 A robust, enterprise-grade RESTful API for Course Management built with Laravel, adhering to clean architecture principles, strict RESTful design standards, and comprehensive automated test coverage.
